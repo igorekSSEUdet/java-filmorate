@@ -35,7 +35,7 @@ public class FilmTest extends HandleValidation {
             films.put(film.getId(), film);
             log.info("Обновлен фильм: " + film);
         } else {
-            throw new NullPointerException("Нет пользователя с таким id");
+            throw new NullPointerException("Нет пользователя с таким ID");
         }
 
         return film;
