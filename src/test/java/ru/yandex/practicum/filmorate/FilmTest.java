@@ -39,7 +39,7 @@ public class FilmTest {
     @Test
     public void shouldCreateFilm() throws Exception {
         Film film = new Film("name", "desc", LocalDate.of(2002, 10, 15), 100);
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
+        mvc.perform(MockMvcRequestBuilders
                         .post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userToJson(film)))
@@ -52,7 +52,7 @@ public class FilmTest {
     @Test
     public void shouldntCreateFilmBecauseNameIsEmpty() throws Exception {
         Film film = new Film("", "desc", LocalDate.of(2002, 10, 15), 100);
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
+        mvc.perform(MockMvcRequestBuilders
                         .post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userToJson(film)))
@@ -67,7 +67,7 @@ public class FilmTest {
         Film film = new Film("name", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
                 "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
                 "xxxxxxxxxxxxxxxxxxxxxxxxxxxx", LocalDate.of(2002, 10, 15), 100);
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
+        mvc.perform(MockMvcRequestBuilders
                         .post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userToJson(film)))
@@ -80,7 +80,7 @@ public class FilmTest {
     @Test
     public void shouldntCreateFilmBecauseReleaseDateIsBeforeThan1894() throws Exception {
         Film film = new Film("name", "desc", LocalDate.of(1700, 10, 15), 100);
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
+        mvc.perform(MockMvcRequestBuilders
                         .post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userToJson(film)))
@@ -90,7 +90,7 @@ public class FilmTest {
 
     }
 
-    public String userToJson(Film film) throws JsonProcessingException {
+    private String userToJson(Film film) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         return mapper.writeValueAsString(film);

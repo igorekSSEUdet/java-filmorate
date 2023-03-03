@@ -42,6 +42,7 @@ public class UserController extends HandleValidation {
             users.put(user.getId(), user);
             log.info("Пользователь обновлен: " + user);
         } else {
+            log.info("Не удалось обновить пользователя: " + user);
             throw new NullPointerException("Нет пользователя с таким ID");
         }
         return user;

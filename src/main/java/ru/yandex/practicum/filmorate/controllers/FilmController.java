@@ -14,7 +14,7 @@ import java.util.Map;
 @RestController
 @Slf4j
 @RequestMapping("/films")
-public class FilmTest extends HandleValidation {
+public class FilmController extends HandleValidation {
 
     private final Map<Integer, Film> films = new HashMap<>();
     private int id = 1;
@@ -35,7 +35,8 @@ public class FilmTest extends HandleValidation {
             films.put(film.getId(), film);
             log.info("Обновлен фильм: " + film);
         } else {
-            throw new NullPointerException("Нет пользователя с таким ID");
+            log.error("Не удалось обновить фильм");
+            throw new NullPointerException("Нет фильма с таким ID");
         }
 
         return film;

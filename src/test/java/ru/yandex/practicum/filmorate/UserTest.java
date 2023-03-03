@@ -38,7 +38,7 @@ class UserTest {
     public void shouldCreateUser() throws Exception {
         User user = new User("error@mail.ru", "login", "name",
                 LocalDate.of(2002, 10, 15));
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
+        mvc.perform(MockMvcRequestBuilders
                         .post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userToJson(user)))
@@ -51,7 +51,7 @@ class UserTest {
     public void shouldntCreateUserBecauseEmailIsError() throws Exception {
         User user = new User("errormail.ru", "login", "name",
                 LocalDate.of(2002, 10, 15));
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
+        mvc.perform(MockMvcRequestBuilders
                         .post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userToJson(user)))
@@ -65,7 +65,7 @@ class UserTest {
     public void shouldntCreateUserBecauseBirthdayInFuture() throws Exception {
         User user = new User("error@mail.ru", "login", "name",
                 LocalDate.of(3000, 10, 15));
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
+        mvc.perform(MockMvcRequestBuilders
                         .post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userToJson(user)))
@@ -79,7 +79,7 @@ class UserTest {
     public void shouldntCreateUserBecauseLoginIsEmpty() throws Exception {
         User user = new User("error@mail.ru", "", "name",
                 LocalDate.of(2000, 10, 15));
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
+        mvc.perform(MockMvcRequestBuilders
                         .post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userToJson(user)))
@@ -93,7 +93,7 @@ class UserTest {
     public void shouldReturnListOfUsers() throws Exception {
         User user = new User("error@mail.ru", "login", "name",
                 LocalDate.of(2000, 10, 15));
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
+        mvc.perform(MockMvcRequestBuilders
                         .post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userToJson(user)))
@@ -113,7 +113,7 @@ class UserTest {
 
         User user = new User("error@mail.ru", "login", null,
                 LocalDate.of(2000, 10, 15));
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
+        mvc.perform(MockMvcRequestBuilders
                         .post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userToJson(user)))
@@ -125,7 +125,7 @@ class UserTest {
                 .andExpect(jsonPath("[1]name").value("login"));
     }
 
-    public String userToJson(User user) throws JsonProcessingException {
+    private String userToJson(User user) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         return mapper.writeValueAsString(user);

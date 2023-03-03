@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CheckHasBlank {
-    String message() default "The login cannot be empty and contain spaces";
+    String message() default "The login cannot contain spaces";
 
     Class<?>[] groups() default {};
 

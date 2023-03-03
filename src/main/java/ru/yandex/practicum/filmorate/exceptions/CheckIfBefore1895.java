@@ -29,7 +29,7 @@ class ContactDateValidator implements
     @Override
     public boolean isValid(LocalDate dateTime,
                            ConstraintValidatorContext cxt) {
-        return !dateTime.isBefore(LocalDate.of(1895, 1, 28));
+        return !dateTime.isBefore(LocalDate.of(1895, 12, 28));
     }
 
 }
