@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.exceptions;
+package ru.yandex.practicum.filmorate.exceptions.modelValidExceptions;
 
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;

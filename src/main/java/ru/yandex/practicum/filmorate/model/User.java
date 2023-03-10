@@ -3,10 +3,12 @@ package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.exceptions.CheckHasBlank;
+import ru.yandex.practicum.filmorate.exceptions.modelValidExceptions.CheckHasBlank;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class User {
@@ -21,6 +23,16 @@ public class User {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Past(message = "The date of birth cannot be in the future.")
     private final LocalDate birthday;
+    private Set<Integer> friends = new HashSet<>();
+
+
+    public void addFriend(Integer id) {
+        friends.add(id);
+    }
+
+    public void removeFriend(Integer id) {
+        friends.remove(id);
+    }
 
     public User( String email, String login, String name, LocalDate birthday) {
         this.email = email;
