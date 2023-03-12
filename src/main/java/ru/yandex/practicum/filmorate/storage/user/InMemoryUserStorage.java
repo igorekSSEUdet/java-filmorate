@@ -24,12 +24,6 @@ public class InMemoryUserStorage implements UserStorage {
     private int id = 1;
     private final DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    private InMemoryUserStorage() {
-    }
-
-    @Getter(lazy = true)
-    private final static InMemoryUserStorage INSTANCE = new InMemoryUserStorage();
-
     public User getFriendById(int id) {
         if (!users.containsKey(id)) {
             log.error(LocalDateTime.now().format(logTimeFormat) + " : Клиент передал несуществующий ID = " + id);

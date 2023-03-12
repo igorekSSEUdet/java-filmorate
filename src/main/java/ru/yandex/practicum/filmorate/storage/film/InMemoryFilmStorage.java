@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.servicesExceptions.FilmStorageException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -14,17 +15,11 @@ import java.util.Map;
 
 
 @Slf4j
+@Component
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> films = new HashMap<>();
     private int id = 1;
     private final DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-
-    private InMemoryFilmStorage() {
-    }
-
-    @Getter(lazy = true)
-    private static final InMemoryFilmStorage INSTANCE = new InMemoryFilmStorage();
-
     public Map<Integer, Film> storage() {
         return films;
     }

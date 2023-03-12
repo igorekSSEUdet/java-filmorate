@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.servicesExceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -18,10 +19,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmService {
 
-    private final FilmStorage filmStorage = InMemoryFilmStorage.getINSTANCE();
-    private final UserStorage userStorage = InMemoryUserStorage.getINSTANCE();
+    private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
     private final DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
+    @Autowired
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+        this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
+    }
 
     public Film addLikeFilm(int filmId, int userId) {
         validIdParameters(filmId, userId);

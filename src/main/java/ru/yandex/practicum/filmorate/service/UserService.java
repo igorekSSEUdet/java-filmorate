@@ -1,24 +1,32 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.servicesExceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
 public class UserService {
 
-    private final UserStorage userStorage = InMemoryUserStorage.getINSTANCE();
+    private final UserStorage userStorage;
     private final DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
+    @Autowired
+    public UserService(UserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
 
     public UserStorage getUserStorage() {
         return userStorage;
@@ -42,11 +50,15 @@ public class UserService {
 
     public List<User> getCommonFriends(int userId, int otherId) {
         validId(userId, otherId);
+        List<Integer> generalList = Stream.concat
+                (userStorage.storage().get(userId).getFriends().stream(),
+                        userStorage.storage().get(otherId).getFriends().stream()).collect(Collectors.toList());
+        Set<Integer> commonId = generalList.stream()
+                .filter(i -> Collections.frequency(generalList, i) > 1)
+                .collect(Collectors.toSet());
         List<User> commonFriends = new ArrayList<>();
-        for (Integer friendId : userStorage.storage().get(userId).getFriends()) {
-            for (Integer otherFriendId : userStorage.storage().get(otherId).getFriends()) {
-                if (friendId.equals(otherFriendId)) commonFriends.add(userStorage.storage().get(friendId));
-            }
+        for (Integer id : commonId) {
+            commonFriends.add(userStorage.storage().get(id));
         }
         return commonFriends;
     }
