@@ -3,12 +3,13 @@ package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.exceptions.AddFriendException;
 import ru.yandex.practicum.filmorate.exceptions.modelValidExceptions.CheckHasBlank;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 public class User {
@@ -23,11 +24,16 @@ public class User {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Past(message = "The date of birth cannot be in the future.")
     private final LocalDate birthday;
-    private Set<Integer> friends = new HashSet<>();
+    private Map<Integer,Status> friends = new HashMap<>();
 
 
-    public void addFriend(Integer id) {
-        friends.add(id);
+    public void requestFriend(Integer id) {
+        friends.put(id,Status.REQUEST);
+    }
+
+    public void acceptFriend(Integer id) {
+        if (friends.containsKey(id)) friends.put(id,Status.FRIEND);
+        else throw new AddFriendException("there is no friend with this id");
     }
 
     public void removeFriend(Integer id) {

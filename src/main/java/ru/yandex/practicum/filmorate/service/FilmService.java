@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.exceptions.servicesExceptions.FilmNotFoundE
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDateTime;
@@ -27,6 +26,11 @@ public class FilmService {
     public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+    }
+
+
+    public Film addFilm (Film film) {
+        return filmStorage.addFilm(film);
     }
 
     public Film addLikeFilm(int filmId, int userId) {

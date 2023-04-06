@@ -34,8 +34,8 @@ public class UserService {
 
     public void addToFriend(int userId, int friendId) {
         validId(userId, friendId);
-        userStorage.storage().get(userId).addFriend(userStorage.storage().get(friendId).getId());
-        userStorage.storage().get(friendId).addFriend(userStorage.storage().get(userId).getId());
+        userStorage.storage().get(userId).requestFriend(userStorage.storage().get(friendId).getId());
+        //userStorage.storage().get(friendId).addFriend(userStorage.storage().get(userId).getId());
         log.info(LocalDateTime.now().format(logTimeFormat) + " : Пользователь с ID = " + userId +
                 " добавил в друзья пользователя с ID = " + friendId);
     }
@@ -51,8 +51,8 @@ public class UserService {
     public List<User> getCommonFriends(int userId, int otherId) {
         validId(userId, otherId);
         List<Integer> generalList = Stream.concat
-                (userStorage.storage().get(userId).getFriends().stream(),
-                        userStorage.storage().get(otherId).getFriends().stream()).collect(Collectors.toList());
+                (userStorage.storage().get(userId).getFriends().keySet().stream(),
+                        userStorage.storage().get(otherId).getFriends().keySet().stream()).collect(Collectors.toList());
         Set<Integer> commonId = generalList.stream()
                 .filter(i -> Collections.frequency(generalList, i) > 1)
                 .collect(Collectors.toSet());
@@ -67,13 +67,15 @@ public class UserService {
         if (!userStorage.storage().containsKey(userId)) {
             log.error(LocalDateTime.now().format(logTimeFormat) + " : Клиент передал несуществующий ID = " + userId);
             throw new UserNotFoundException("Nonexistent ID was passed");
-        } else if (userId < 0) {
+        }
+        else if (userId < 0) {
             log.error(LocalDateTime.now().format(logTimeFormat) + " : Клиент передал отрицательный ID = " + userId);
             throw new UserNotFoundException("ID cannot be negative");
         }
         log.info(LocalDateTime.now().format(logTimeFormat) + " : Клиент получил список своих друзей");
         List<User> usersFriends = new ArrayList<>();
-        for (Integer id : userStorage.storage().get(userId).getFriends()) {
+
+        for (Integer id : userStorage.storage().get(userId).getFriends().keySet()) {
             usersFriends.add(userStorage.storage().get(id));
         }
         return usersFriends;
