@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.exceptions;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,15 +17,16 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.DbStorageUtils;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice(assignableTypes =
-        {FilmController.class, UserController.class, FilmService.class, UserService.class, User.class, Film.class
-                , InMemoryUserStorage.class, InMemoryFilmStorage.class})
+        {FilmController.class, UserController.class, FilmService.class, UserService.class, User.class, Film.class,
+                UserDbStorage.class, FilmDbStorage.class, DbStorageUtils.class, })
 public class ErrorHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -58,10 +60,22 @@ public class ErrorHandler {
         return Map.of("Not found error: ", e.getMessage());
     }
 
+    @ExceptionHandler({NullPointerException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> NotFoundException(final NullPointerException e) {
+        return Map.of("Not found error: ", e.getMessage());
+    }
+
 
     @ExceptionHandler({UserNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> UserNotFoundException(final UserNotFoundException e) {
+        return Map.of("Not found error: ", e.getMessage());
+    }
+
+    @ExceptionHandler({EmptyResultDataAccessException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> NotFoundException(final EmptyResultDataAccessException e) {
         return Map.of("Not found error: ", e.getMessage());
     }
 }

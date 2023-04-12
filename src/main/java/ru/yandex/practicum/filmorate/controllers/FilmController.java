@@ -10,13 +10,13 @@ import ru.yandex.practicum.filmorate.model.MPA;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
 @Slf4j
-@RequestMapping("/films")
+//@RequestMapping("/films/")
 public class FilmController {
 
     private final FilmService filmService;
@@ -26,64 +26,79 @@ public class FilmController {
         this.filmService = filmService;
     }
 
-    @PostMapping
+
+    @PostMapping("/films")
     @ResponseStatus(HttpStatus.CREATED)
-    public Film addFilm(@Valid @RequestBody Film film) {
+    public Optional<Film> addFilm(@Valid @RequestBody Film film) {
         return filmService.addFilm(film);
     }
 
-    @PutMapping
+    @PutMapping("/films")
     @ResponseStatus(HttpStatus.OK)
-    public Film updateFilm(@Valid @RequestBody Film film) {
-        return filmService.getFilmStorage().updateFilm(film);
+    public Optional<Film> updateFilm(@Valid @RequestBody Film film) {
+        return filmService.updateFilm(film);
     }
 
-    @GetMapping
+    @DeleteMapping("films/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void removeFilmById(@PathVariable int id) {
+        filmService.removeFilmById(id);
+    }
+
+    @GetMapping("/films")
     @ResponseStatus(HttpStatus.OK)
     public List<Film> getAllFilms() {
-        return filmService.getFilmStorage().getAllFilms();
+        return filmService.getAllFilms();
     }
 
-    @PutMapping("{id}/like/{userId}")
+    @PutMapping("films/{filmId}/like/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public Film addLikeFilm(@PathVariable int id, @PathVariable int userId) {
-        return filmService.addLikeFilm(id, userId);
+    public Optional<Film> addLikeFilm(@PathVariable int filmId, @PathVariable int userId) {
+        return filmService.addLikeFilm(filmId, userId);
     }
 
-    @DeleteMapping("{id}/like/{userId}")
+    @DeleteMapping("films/{filmId}/like/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public Film removeLikeFilm(@PathVariable int id, @PathVariable int userId) {
-        return filmService.deleteLikeFilm(id, userId);
+    public Optional<Film> removeLikeFilm(@PathVariable int filmId, @PathVariable int userId) {
+        return filmService.deleteLikeFilm(filmId, userId);
 
     }
 
-    @GetMapping("popular")
+    @GetMapping("films/popular")
     @ResponseStatus(HttpStatus.OK)
     public List<Film> mostPopularFilms(@RequestParam(required = false, defaultValue = "10") int count) {
         return filmService.mostPopularFilms(count);
     }
 
-    @GetMapping("test")
+    @GetMapping("films/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Film test1() {
-        return new Film("name","desc", LocalDate.now(),100,
-                List.of(new Genre(1,"Comedy"),new Genre(1,"Drama"),new Genre(1,"Crime")
-                ),new MPA(1,"NC-17"));
+    public Optional<Film> getFilmById(@PathVariable int id) {
+        return filmService.getFilmById(id);
     }
 
-    @PutMapping("test")
-    @ResponseStatus(HttpStatus.OK)
-    public Film test2(@RequestBody Film film) {
-       filmService.addFilm(film);
-        System.out.println(film.toString());
-        return film;
+
+    @RequestMapping("/genres")
+    @GetMapping
+    public List<Genre> getAllGenres() {
+        return filmService.getAllGenres();
     }
 
-    @GetMapping("{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public Film getFriendById(@PathVariable int id) {
-        return filmService.getFilmStorage().getFilmById(id);
+    @RequestMapping("/genres/{id}")
+    @GetMapping
+    public Genre getGenreById(@PathVariable int id) {
+        return filmService.getGenreById(id);
     }
 
+    @RequestMapping("/mpa")
+    @GetMapping
+    public List<MPA> getAllMpa() {
+        return filmService.getAllMpa();
+    }
+
+    @GetMapping
+    @RequestMapping("/mpa/{id}")
+    public MPA getMpaById(@PathVariable int id) {
+        return filmService.getMpaById(id);
+    }
 
 }
