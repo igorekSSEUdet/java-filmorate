@@ -142,7 +142,7 @@ public class UserDbStorage implements UserStorage {
         utils.checkUserId(List.of(id));
         String sql = "SELECT ID,EMAIL,LOGIN,NAME,BIRTHDAY " +
                 "FROM USERS WHERE ID = ?";
-        return Optional.of(jdbcTemplate.queryForObject(sql, utils::mapRowToUser, id));
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, utils::mapRowToUser, id));
     }
 
 }

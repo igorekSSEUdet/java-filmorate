@@ -63,7 +63,7 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "SELECT ID,NAME,DESCRIPTION,RELEASEDATE,DURATION,LIKES,MPA_ID " +
                 "FROM FILMS WHERE ID = ?";
         log.info(LocalDateTime.now().format(logTimeFormat) + " : Пользователь получил фильм с id = " + id);
-        return Optional.of(jdbcTemplate.queryForObject(sql, utils::mapRowToFilm, id));
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, utils::mapRowToFilm, id));
     }
 
     @Override
@@ -83,7 +83,10 @@ public class FilmDbStorage implements FilmStorage {
                 film.getId());
         updateFilmsGenres(film);
         log.info(LocalDateTime.now().format(logTimeFormat) + " : Обновлен фильм " + film);
-        return Optional.of(getFilm(film.getId())).get();
+        return Optional.ofNullable(getFilm(film.getId()).orElseThrow(() -> {
+            log.error("Ошибка обновления фильма с ID = " + film.getId());
+            return new FilmNotFoundException("Нет  фильма с таким ID");
+        }));
     }
 
     public void removeFilmById(int id) {
@@ -109,7 +112,10 @@ public class FilmDbStorage implements FilmStorage {
         String sql2 = "UPDATE FILMS SET LIKES = LIKES + 1 WHERE ID = ?";
         jdbcTemplate.update(sql2, filmId);
         log.info(LocalDateTime.now().format(logTimeFormat) + " : Пользователь с id = " + userId + " поставил лайк фильму с id = " + filmId);
-        return Optional.of(getFilm(filmId)).get();
+        return Optional.ofNullable(getFilm(filmId)).orElseThrow(() -> {
+            log.error("Ошибка добавления лайка фильму с id = " + filmId + "id пользователя = " + userId);
+            return new FilmNotFoundException("Нет филмьа с таким ID");
+        });
     }
 
     public Optional<Film> removeLikeFilm(int filmId, int userId) {
@@ -121,7 +127,10 @@ public class FilmDbStorage implements FilmStorage {
         String sql2 = "UPDATE FILMS SET LIKES = LIKES - 1 WHERE ID = ?";
         jdbcTemplate.update(sql2, filmId);
         log.info(LocalDateTime.now().format(logTimeFormat) + " : Пользователь с id = " + userId + " убрал лайк с фильма с id = " + filmId);
-        return Optional.of(getFilm(filmId)).get();
+        return Optional.ofNullable(getFilm(filmId)).orElseThrow(() -> {
+            log.error("Ошибка удаления лайка фильму с id = " + filmId + "id пользователя = " + userId);
+            return new FilmNotFoundException("Нет фильма с таким ID");
+        });
     }
 
     public Genre getGenreById(int id) {
@@ -157,11 +166,9 @@ public class FilmDbStorage implements FilmStorage {
             List<Genre> genres_id = film.getGenres();
             String sql2 = "INSERT INTO FILM_GENRES(FILM_ID,GENRE_ID) " +
                     "VALUES(?,?)";
-            genres_id.forEach(genre -> {
-                jdbcTemplate.update(sql2, id, genre.getId());
-            });
+            genres_id.forEach(genre -> jdbcTemplate.update(sql2, id, genre.getId()));
         }
-        return getFilm(id).get();
+        return getFilm(id).orElseThrow(() -> new FilmNotFoundException("Нет фильма с таким  ID"));
     }
 
     private Film updateFilmsGenres(Film film) {
@@ -172,9 +179,7 @@ public class FilmDbStorage implements FilmStorage {
             List<Genre> genres_id = film.getGenres();
             String sql2 = "INSERT INTO FILM_GENRES(FILM_ID,GENRE_ID) " +
                     "VALUES(?,?)";
-            genres_id.forEach(genre -> {
-                jdbcTemplate.update(sql2, id, genre.getId());
-            });
+            genres_id.forEach(genre -> jdbcTemplate.update(sql2, id, genre.getId()));
         }
         return getFilm(id).orElseThrow(() -> new FilmNotFoundException("Нет фильма с таким ID"));
     }
@@ -183,7 +188,7 @@ public class FilmDbStorage implements FilmStorage {
         utils.checkFilmId(List.of(id));
         String sql = "SELECT ID,NAME,DESCRIPTION,RELEASEDATE,DURATION,LIKES,MPA_ID " +
                 "FROM FILMS WHERE ID = ?";
-        return Optional.of(jdbcTemplate.queryForObject(sql, utils::mapRowToFilm, id));
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, utils::mapRowToFilm, id));
     }
 
 }

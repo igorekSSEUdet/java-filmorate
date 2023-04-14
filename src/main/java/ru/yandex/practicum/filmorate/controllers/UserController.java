@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
-import javax.swing.text.html.Option;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;

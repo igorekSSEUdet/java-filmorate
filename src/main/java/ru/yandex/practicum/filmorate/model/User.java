@@ -4,13 +4,10 @@ package ru.yandex.practicum.filmorate.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.exceptions.AddFriendException;
 import ru.yandex.practicum.filmorate.exceptions.modelValidExceptions.CheckHasBlank;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 @Data
 @Builder
