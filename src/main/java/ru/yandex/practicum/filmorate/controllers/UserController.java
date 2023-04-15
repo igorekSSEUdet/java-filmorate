@@ -8,7 +8,9 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -24,14 +26,21 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User addUser(@Valid @RequestBody User user) {
-        return userService.getUserStorage().addUser(user);
+    public Optional<User> addUser(@Valid @RequestBody User user) {
+        if (user.getName() == null || user.getName().equals("")) user.setName(user.getLogin());
+        return userService.addUser(user);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public User updateUser(@Valid @RequestBody User user) {
-        return userService.getUserStorage().updateUser(user);
+    public Optional<User> updateUser(@Valid @RequestBody User user) {
+        return userService.updateUser(user);
+    }
+
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean removeUser(@PathVariable int id) {
+        return userService.removeUser(id);
     }
 
     @GetMapping
@@ -60,8 +69,17 @@ public class UserController {
 
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public User getFriendById(@PathVariable int id) {
-        return userService.getUserStorage().getFriendById(id);
+    public Optional<User> getUserById(@PathVariable int id) {
+        return userService.getUserById(id);
+    }
+
+    @GetMapping("test")
+    @ResponseStatus(HttpStatus.OK)
+    public User test() {
+        return User.builder().email("mail@mail.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusYears(5)).build();
     }
 
     @GetMapping("{id}/friends")

@@ -5,17 +5,25 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 public interface UserStorage {
 
-    public User addUser(@Valid @RequestBody User user);
+    Optional<User> addUser(@Valid @RequestBody User user);
 
-    User updateUser(@Valid @RequestBody User user);
+    Optional<User> updateUser(@Valid @RequestBody User user);
 
     List<User> getAllUsers();
 
-    public Map<Integer, User> storage();
+    Optional<User> getUserById(int id);
 
-    User getFriendById(int id);
+    boolean removeUser(int id);
+
+    void addToFriend(int id, int friendId);
+
+    void removeFromFriend(int id, int friendId);
+
+    List<User> getCommonFriends(int id, int otherId);
+
+    List<User> getUsersFriendsById(int id);
 }

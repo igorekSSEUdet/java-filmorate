@@ -2,78 +2,75 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exceptions.servicesExceptions.FilmNotFoundException;
+import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.MPA;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @Slf4j
 public class FilmService {
-
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
-    private final DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
+    }
+
+    public List<Film> getAllFilms() {
+        return filmStorage.getAllFilms();
     }
 
 
-    public Film addFilm (Film film) {
+    public void removeFilmById(int id) {
+        filmStorage.removeFilmById(id);
+    }
+
+    public Optional<Film> updateFilm(Film film) {
+        return filmStorage.updateFilm(film);
+    }
+
+    public Optional<Film> addFilm(Film film) {
         return filmStorage.addFilm(film);
     }
 
-    public Film addLikeFilm(int filmId, int userId) {
-        validIdParameters(filmId, userId);
-        Film film = filmStorage.storage().get(filmId);
-        film.addLiker(userStorage.storage().get(userId));
-        film.countLike();
-        log.info(LocalDateTime.now().format(logTimeFormat) + " : Пользователь с ID = " + userId +
-                " поставил лайк фильму с ID = " + filmId);
-        return film;
+    public Optional<Film> getFilmById(int id) {
+        return filmStorage.getFilmById(id);
     }
 
-    public Film deleteLikeFilm(int filmId, int userId) {
-        validIdParameters(filmId, userId);
-        Film film = filmStorage.storage().get(filmId);
-        film.removeLiker(userStorage.storage().get(userId));
-        film.countLike();
-        log.info(LocalDateTime.now().format(logTimeFormat) + " : Пользователь с ID = " + userId +
-                " удалил лайк фильму с ID = " + filmId);
-        return film;
+    public Optional<Film> addLikeFilm(int filmId, int userId) {
+        return filmStorage.addLikeFilm(filmId, userId);
+    }
+
+    public Optional<Film> deleteLikeFilm(int filmId, int userId) {
+        return filmStorage.removeLikeFilm(filmId, userId);
     }
 
     public List<Film> mostPopularFilms(int count) {
-        log.info(LocalDateTime.now().format(logTimeFormat) + " : Клиент получил топ " + count + " фильмов");
-        return filmStorage.storage().values().stream()
-                .sorted((p0, p1) -> p1.getLikes().compareTo(p0.getLikes()))
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.mostPopularFilms(count);
     }
 
-    public InMemoryFilmStorage getFilmStorage() {
-        return (InMemoryFilmStorage) filmStorage;
+    public List<Genre> getAllGenres() {
+        return filmStorage.getAllGenres();
     }
 
-    private void validIdParameters(int filmId, int userId) {
-        if (!filmStorage.storage().containsKey(filmId) || !userStorage.storage().containsKey(userId)) {
-            log.error(LocalDateTime.now().format(logTimeFormat) + " : Клиент передал несуществующие параметры ID = " +
-                    filmId + "," + userId);
-            throw new FilmNotFoundException("Nonexistent ID was passed");
-        } else if (filmId < 0 || userId < 0) {
-            log.error(LocalDateTime.now().format(logTimeFormat) + " : Клиент передал отрицательные параметры ID = " +
-                    filmId + "," + userId);
-            throw new FilmNotFoundException("ID cannot be negative");
-        }
+    public Genre getGenreById(@PathVariable int id) {
+        return filmStorage.getGenreById(id);
     }
+
+    public List<MPA> getAllMpa() {
+        return filmStorage.getAllMpa();
+    }
+
+    public MPA getMpaById(int id) {
+        return filmStorage.getMpaById(id);
+    }
+
+
 }
